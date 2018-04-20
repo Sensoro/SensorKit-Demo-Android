@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SensorDemo</string>
+    <string name="action_settings">Settings</string>
+    <string name="device_list">设备列表</string>
+    <string name="device_detail">设备详情</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+</resources>
