@@ -1,8 +1,8 @@
-#Android Sensor SDK 
+# Android Sensor SDK 
 
-##Step By Step
+## Step By Step
 
-###1.新建工程
+### 1.新建工程
 Android Studio配置
 
 将sensoro-sensor-kit.jar包放入道libs文件夹下,然后在当前工程下的build.gradle文件配置项中的dependencies新增内容,，如下compile files('libs/sensoro-sensor-kit.jar')
@@ -11,7 +11,7 @@ Eclipse配置
 
 将sensoro-sensor-kit.jar包放入道libs文件夹下,右击工程propeties,选择Java build Path，在Library选项中添加sensoro-sensor-kit依赖关系
 
-###2.Android Manifest文件说明
+### 2.Android Manifest文件说明
 在permission节点下新增以下权限和功能，以下权限和功能是必选项 
 
 	<uses-permission android:name="android.permission.BLUETOOTH" />
@@ -32,7 +32,7 @@ Eclipse配置
 
     compile 'no.nordicsemi.android:dfu:1.0.0'
     compile group: 'com.google.protobuf', name: 'protobuf-java', version: '2.5.0'
-###3.代码调用示例说明
+### 3.代码调用示例说明
 
 1.sdk 核心功能调用示例
 
@@ -62,15 +62,45 @@ Eclipse配置
 说明：SensoroDeviceManager 是传感器设备管理类，负责处理发现设备和设备消失以及设备信息更新功能，该类是单例类，可通过getInstance方法获得该对象
 SensoroDeviceListener 用于回调通知发现设备，设备消息，和设备更新
 
-###4. 透传实现
+### 4. 透传实现
 1.启动任务
 
-        SensoroDevice sensoroDevice = this.getIntent().getParcelableExtra("sensoroDevice");        sensoroDeviceSession = new SensoroDeviceSession(this, sensoroDevice);        sensoroDeviceSession.startSession("password", new SensoroDeviceSession.ConnectionCallback() {            @Override            public void onConnectFailed(int i) {//连接传感器失败                            }            @Override            public void onConnectSuccess() {//连接传感器成功            }            @Override            public void onNotify(byte[] bytes) {//数据透传回调            }        });
+        SensoroDevice sensoroDevice = this.getIntent().getParcelableExtra("sensoroDevice");
+        sensoroDeviceSession = new SensoroDeviceSession(this, sensoroDevice);
+        sensoroDeviceSession.startSession("password", new SensoroDeviceSession.ConnectionCallback() {
+            @Override
+            public void onConnectFailed(int i) {//连接传感器失败
+                
+            }
+
+            @Override
+            public void onConnectSuccess() {//连接传感器成功
+
+            }
+
+            @Override
+            public void onNotify(byte[] bytes) {//数据透传回调
+
+            }
+        });
 2.写入数据
 
-        byte []data = SensoroUtils.HexString2Bytes(str);        if (sensoroDeviceSession != null) {            sensoroDeviceSession.write(data, new 
-            SensoroDeviceSession.WriteCallback() {                @Override                public void onWriteSuccess() {//数据写入成功                                    }                @Override                public void onWriteFailure(int i) {//数据写入失败                }            });        }       
-###5. 设备升级说明
+        byte []data = SensoroUtils.HexString2Bytes(str);
+        if (sensoroDeviceSession != null) {
+            sensoroDeviceSession.write(data, new 
+            SensoroDeviceSession.WriteCallback() {
+                @Override
+                public void onWriteSuccess() {//数据写入成功
+                    
+                }
+
+                @Override
+                public void onWriteFailure(int i) {//数据写入失败
+
+                }
+            });
+        }       
+### 5. 设备升级说明
 1.创建对象
 
         //参数1：上下文
@@ -120,7 +150,8 @@ SensoroDeviceListener 用于回调通知发现设备，设备消息，和设备�
                 loge("升级失败======" + s + ",s1 = " + s1 + ",msg = " + (throwable == null ? "e 为空" : throwable
                         .getMessage()));
             }
-        });;        }
+        });;
+        }
 1.添加生命周期方法
 
     /**
@@ -140,7 +171,7 @@ SensoroDeviceListener 用于回调通知发现设备，设备消息，和设备�
         super.onPause();
         mSensoroDeviceSession.onSessonPause();
     }
-###6. 传感器设备对象说明
+### 6. 传感器设备对象说明
 说明：SensoroDevice 为传感器设备对象，以下为对象属性
 
      serialNumber ---String; // SN
