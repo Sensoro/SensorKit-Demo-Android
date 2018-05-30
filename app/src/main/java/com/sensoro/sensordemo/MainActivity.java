@@ -23,12 +23,14 @@ import android.widget.Toast;
 
 import com.sensoro.sensor.kit.SensoroDeviceManager;
 import com.sensoro.sensor.kit.SensoroDeviceSession;
+import com.sensoro.sensor.kit.callback.ConnectionCallback;
 import com.sensoro.sensor.kit.callback.SensoroDeviceListener;
 import com.sensoro.sensor.kit.entity.SensoroDevice;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,15 +61,14 @@ public class MainActivity extends AppCompatActivity {
         return isContains;
     }
 
-    public void removeDevice(SensoroDevice sensoroDevice) {
-
-        for (int i = 0; i < deviceArrayList.size(); i++) {
-            SensoroDevice tempDevice = deviceArrayList.get(i);
-            if (tempDevice.getSerialNumber().equalsIgnoreCase(sensoroDevice.getSerialNumber())) {
-                deviceArrayList.remove(i);
+    private void removeDevice(SensoroDevice sensoroDevice) {
+        Iterator<SensoroDevice> iterator = deviceArrayList.iterator();
+        if (iterator.hasNext()) {
+            SensoroDevice next = iterator.next();
+            if (next.getSerialNumber().equalsIgnoreCase(sensoroDevice.getSerialNumber())) {
+                iterator.remove();
             }
         }
-
     }
 
     /**
@@ -106,76 +107,75 @@ public class MainActivity extends AppCompatActivity {
         sensoroDeviceManager.setSensoroDeviceListener(new SensoroDeviceListener<SensoroDevice>() {
             @Override
             public void onNewDevice(final SensoroDevice sensoroDevice) {
-                String macAddress = sensoroDevice.getMacAddress();
-
-                String s = sensoroDevice.toString();
-//                Log.e("ddong1031", "onNewDevice: sensoroDevice = " + s);
-                if (sensoroDevice.getSerialNumber().contains("697062")) {
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日    HH:mm:ss     ");
-                    Date curDate = new Date(System.currentTimeMillis());//获取当前时间
-                    String str = formatter.format(curDate);
-                    System.out.println("device" + sensoroDevice.getSerialNumber() + ".onNewDevice==>" + str);
-                }
-//                Log.e("ddong1031", "onNewDevice: macAddress = " + macAddress);
-//                Log.e("ddong1031", "onNewDevice: " + sensoroDevice.getSerialNumber());
-                if (!containsDevice(sensoroDevice)) {
-//                    if (sensoroDevice.getSerialNumber().contains("CB70")) {
-                        deviceArrayList.add(sensoroDevice);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                deviceListAdapter.notifyDataSetChanged();
-                            }
-                        });
-//                    }
-
-                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String macAddress = sensoroDevice.getMacAddress();
+                        String s = sensoroDevice.toString();
+//                      Log.e("ddong1031", "onNewDevice: sensoroDevice = " + s);
+                        if (sensoroDevice.getSerialNumber().contains("697062")) {
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日    HH:mm:ss     ");
+                            Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+                            String str = formatter.format(curDate);
+                            System.out.println("device" + sensoroDevice.getSerialNumber() + ".onNewDevice==>" + str);
+                        }
+//                      Log.e("ddong1031", "onNewDevice: macAddress = " + macAddress);
+//                      Log.e("ddong1031", "onNewDevice: " + sensoroDevice.getSerialNumber());
+                        if (!containsDevice(sensoroDevice)) {
+//                      if (sensoroDevice.getSerialNumber().contains("CB70")) {
+                            deviceArrayList.add(sensoroDevice);
+//                      }
+                        }
+                        deviceListAdapter.notifyDataSetChanged();
+                    }
+                });
 
             }
 
             @Override
             public void onGoneDevice(final SensoroDevice sensoroDevice) {
-                String macAddress = sensoroDevice.getMacAddress();
-                if (sensoroDevice.getSerialNumber().contains("697062")) {
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日    HH:mm:ss     ");
-                    Date curDate = new Date(System.currentTimeMillis());//获取当前时间
-                    String str = formatter.format(curDate);
-                    System.out.println("device" + sensoroDevice.getSerialNumber() + ".onGoneDevice==>" + str);
-                }
-//                Log.e("ddong1031", "onNewDevice: macAddress = " + macAddress);
-//                Log.e("ddong1031", "onGoneDevice: " + sensoroDevice.getSerialNumber());
-//                removeDevice(sensoroDevice);
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-////                        deviceArrayList.add(sensoroDevice);
-//                        deviceListAdapter.notifyDataSetChanged();
-//                    }
-//                });
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String macAddress = sensoroDevice.getMacAddress();
+                        if (sensoroDevice.getSerialNumber().contains("697062")) {
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日    HH:mm:ss     ");
+                            Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+                            String str = formatter.format(curDate);
+                            System.out.println("device" + sensoroDevice.getSerialNumber() + ".onGoneDevice==>" + str);
+                        }
+//                      Log.e("ddong1031", "onNewDevice: macAddress = " + macAddress);
+//                      Log.e("ddong1031", "onGoneDevice: " + sensoroDevice.getSerialNumber());
+                        removeDevice(sensoroDevice);
+//                        deviceArrayList.add(sensoroDevice);
+                        deviceListAdapter.notifyDataSetChanged();
+                    }
+                });
             }
 
             @Override
             public void onUpdateDevices(final ArrayList<SensoroDevice> arrayList) {
 
-//                Log.e("ddong1031", "onUpdateDevices: " + arrayList.size());
-                for (int i = 0; i < arrayList.size(); i++) {
-                    SensoroDevice tempDevice = arrayList.get(i);
-                    for (int j = 0; j < deviceArrayList.size(); j++) {
-                        SensoroDevice sensoroDevice = deviceArrayList.get(j);
-                        String macAddress = sensoroDevice.getMacAddress();
-//                        Log.e("ddong1031", "onNewDevice: macAddress = " + macAddress);
-//                        Log.e("ddong1031", "onUpdateDevices: " + sensoroDevice.getSerialNumber());
-                        if (tempDevice.getSerialNumber().equalsIgnoreCase(sensoroDevice.getSerialNumber())) {
-                            deviceArrayList.set(j, tempDevice);
+//              Log.e("ddong1031", "onUpdateDevices: " + arrayList.size());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < arrayList.size(); i++) {
+                            SensoroDevice tempDevice = arrayList.get(i);
+                            for (int j = 0; j < deviceArrayList.size(); j++) {
+                                SensoroDevice sensoroDevice = deviceArrayList.get(j);
+                                String macAddress = sensoroDevice.getMacAddress();
+//                              Log.e("ddong1031", "onNewDevice: macAddress = " + macAddress);
+//                              Log.e("ddong1031", "onUpdateDevices: " + sensoroDevice.getSerialNumber());
+                                if (tempDevice.getSerialNumber().equalsIgnoreCase(sensoroDevice.getSerialNumber())) {
+                                    deviceArrayList.set(j, tempDevice);
+                                }
+                            }
+
                         }
+                        deviceListAdapter.notifyDataSetChanged();
                     }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            deviceListAdapter.notifyDataSetChanged();
-                        }
-                    });
-                }
+                });
 
             }
 
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.setMessage("connecting...");
         progressDialog.show();
         SensoroDeviceSession sensoroDeviceSession = new SensoroDeviceSession(this, sensoroDevice);
-        sensoroDeviceSession.startSession("ePa6jc7MrY.5X[}}", new SensoroDeviceSession.ConnectionCallback() {
+        sensoroDeviceSession.startSession("ePa6jc7MrY.5X[}}", new ConnectionCallback() {
             @Override
             public void onConnectFailed(int i) {
 

@@ -8,6 +8,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.sensoro.sensor.kit.SensoroDeviceSession;
+import com.sensoro.sensor.kit.callback.ConnectionCallback;
+import com.sensoro.sensor.kit.callback.WriteCallback;
 import com.sensoro.sensor.kit.entity.SensoroDevice;
 import com.sensoro.sensor.kit.utils.SensoroUtils;
 
@@ -17,8 +19,9 @@ import static com.sensoro.sensordemo.MainActivity.SENSORO_DEVICE;
  * Created by fangping on 2017/4/18.
  */
 
-public class WriteActivity extends Activity implements SensoroDeviceSession.ConnectionCallback, SensoroDeviceSession.WriteCallback{
+public class WriteActivity extends Activity implements ConnectionCallback, WriteCallback {
     SensoroDeviceSession sensoroDeviceSession;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +35,8 @@ public class WriteActivity extends Activity implements SensoroDeviceSession.Conn
         connectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sensoroDeviceSession = new SensoroDeviceSession(WriteActivity.this.getApplicationContext(), sensoroDevice);
+                sensoroDeviceSession = new SensoroDeviceSession(WriteActivity.this.getApplicationContext(),
+                        sensoroDevice);
                 sensoroDeviceSession.startSession("ePa6jc7MrY.5X[}}", WriteActivity.this);
             }
         });
@@ -44,7 +48,7 @@ public class WriteActivity extends Activity implements SensoroDeviceSession.Conn
             public void onClick(View view) {
                 String str = editText.getText().toString();
 //                String hexString = str2HexStr(str);
-                byte []data = SensoroUtils.HexString2Bytes(str);
+                byte[] data = SensoroUtils.HexString2Bytes(str);
                 if (sensoroDeviceSession != null) {
                     sensoroDeviceSession.write(data, WriteActivity.this);
                 }
@@ -52,7 +56,7 @@ public class WriteActivity extends Activity implements SensoroDeviceSession.Conn
         });
     }
 
-//    public void write(String str){
+    //    public void write(String str){
 //        byte []data = SensoroUtils.HexString2Bytes(str);
 //        if (sensoroDeviceSession != null) {
 //            sensoroDeviceSession.write(data, new SensoroDeviceSession.WriteCallback() {
@@ -89,16 +93,14 @@ public class WriteActivity extends Activity implements SensoroDeviceSession.Conn
 //            }
 //        });
 //    }
-    public static String str2HexStr(String str)
-    {
+    public static String str2HexStr(String str) {
 
         char[] chars = "0123456789ABCDEF".toCharArray();
         StringBuilder sb = new StringBuilder("");
         byte[] bs = str.getBytes();
         int bit;
 
-        for (int i = 0; i < bs.length; i++)
-        {
+        for (int i = 0; i < bs.length; i++) {
             bit = (bs[i] & 0x0f0) >> 4;
             sb.append(chars[bit]);
             bit = bs[i] & 0x0f;
@@ -138,7 +140,13 @@ public class WriteActivity extends Activity implements SensoroDeviceSession.Conn
     }
 
     @Override
-    public void onNotify(byte[] bytes) {
+    public void onNotify(final byte[] bytes) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(WriteActivity.this, "数据回调：" + SensoroUtils.bytesToHexString(bytes), Toast.LENGTH_LONG).show();
+            }
+        });
         System.out.println("==>");
     }
 
