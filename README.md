@@ -24,7 +24,7 @@ Eclipse配置
 添加service,如下
 
     <service android:name="com.sensoro.sensor.kit.SensoroDeviceService"></service>
-    <service android:name="com.sensoro.sensor.kit.IntentProcessorService"></service>
+    <service android:name="com.sensoro.sensor.kit.ble.service.IntentProcessorService"></service>
     <service
             android:name="com.sensoro.sensor.kit.update.service.DfuService"
             android:exported="true" />
